@@ -1,0 +1,7 @@
+# Direct dependencies only, pinned to exact versions.
+# The full resolved tree (including transitive deps) is in requirements.lock.txt.
+# Install exactly what was tested:  pip install -r requirements.lock.txt
+anthropic==2.3.0
+claude-agent-sdk==0.2.174
+pytest==9.1.1
+truststore==0.10.5

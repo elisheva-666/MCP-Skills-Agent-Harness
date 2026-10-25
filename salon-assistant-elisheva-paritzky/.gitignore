@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Runtime state (memory, history, bookings) is recreated on every run.
+state/
+
+# Secrets never go to git. The API key lives only in the terminal's environment.
+.env
+*.key
+
+# Generated at runtime by SDK/agent.py
+SDK/workspace/

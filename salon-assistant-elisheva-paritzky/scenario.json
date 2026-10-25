@@ -1,0 +1,41 @@
+{
+  "client_id": "0521234567",
+  "today": "2026-10-25",
+  "sessions": [
+    {
+      "id": "s1",
+      "turns": [
+        "היי, אני שירה. אני מתחתנת ב-14 בינואר 2027 ומחפשת שיער ואיפור לחתונה. מה אתם מציעים?",
+        "אפשר לראות דוגמאות לתסרוקת כלה אסופה?",
+        "אהבתי את הפקעת הקלועה עם סיכת הפנינים! ובאיפור אני מעדיפה טבעי ועדין.",
+        "תקבעי לי פגישת ייעוץ ל-7 בינואר 2027 בשעה 11:00. תבדקי קודם שזה לא שבת או חג."
+      ]
+    },
+    {
+      "id": "s2",
+      "turns": [
+        "היי, זו שוב שירה. את זוכרת איזו תסרוקת אהבתי ומתי החתונה שלי?",
+        "התחרטתי, באיפור אני רוצה דווקא גלאם מעושן. אפשר לראות דוגמאות?",
+        "והחתונה זזה ל-21 בינואר 2027, אז תזיזי גם את הייעוץ ל-14 בינואר 2027 בשעה 11:00."
+      ]
+    }
+  ],
+  "checks": [
+    {"id": "style_updated", "type": "memory_contains", "key": "style", "any": ["גלאם", "מעושן"],
+     "description": "סתירה: הסגנון בזיכרון הוחלף לגלאם מעושן"},
+    {"id": "old_style_in_history", "type": "memory_previous_contains", "key": "style", "any": ["טבעי"],
+     "description": "הערך הישן (טבעי) נשמר כהיסטוריה ולא כערך נוכחי"},
+    {"id": "event_date_updated", "type": "memory_contains", "key": "event_date", "any": ["21"],
+     "description": "תאריך החתונה בזיכרון עודכן ל-21 בינואר"},
+    {"id": "liked_image_saved", "type": "memory_contains", "key": "liked_image", "any": ["0577", "פקעת"],
+     "description": "התמונה שאהבה נשמרה בזיכרון"},
+    {"id": "single_moved_booking", "type": "booking", "count": 1, "date": "2027-01-14", "time": "11:00",
+     "description": "יש תור אחד בלבד, והוא הוזז ל-14.1 ב-11:00"},
+    {"id": "external_tool_used", "type": "tool_called", "tool": "check_jewish_calendar",
+     "description": "הכלי החיצוני (Hebcal) הופעל"},
+    {"id": "gallery_shown", "type": "image_shown", "session": "s1", "file": "img_0577.jpg",
+     "description": "בסשן 1 הוצגה הפקעת הקלועה מהגלריה"},
+    {"id": "recall_in_session2", "type": "reply_contains", "session": "s2", "turn": 1, "any": ["פקעת", "14"],
+     "description": "בסשן 2 (מופע חדש) הסוכן זוכר את התסרוקת או את התאריך"}
+  ]
+}

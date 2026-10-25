@@ -4,6 +4,20 @@
 
 **השוואה הוגנת:** אותו מודל (`claude-opus-5-5`) ואותו effort (`medium`) מ-`shared/config.py`, אותם כלים מ-`shared/tools.py`, אותן הוראות מ-`shared/prompts.py`, גרסאות ספריות נעולות (`requirements.lock.txt`), וכל ריצה מתחילה מתיקיית `state/` ריקה.
 
+> **הערה: גרסת ה-API לא הורצה מול המודל האמיתי.** הרצה כזו דורשת קרדיט בתשלום ב-Claude Console, ולא היה לי מפתח.
+> הגרסה מלאה ונבדקה offline עם client מדומה (`tests/test_api_harness.py`, 14 בדיקות). הבדיקות מאמתות:
+> - הלולאה ממשיכה כל עוד `stop_reason == "tool_use"` ונעצרת ב-`end_turn`.
+> - כמה `tool_result` חוזרים בהודעה אחת.
+> - שגיאת כלי או כלי לא מוכר חוזרים כ-`is_error` בלי לקרוס.
+> - הבקשה נשלחת עם המודל, ה-effort וה-`fallbacks` הנכונים.
+> - נקודות ה-cache נשלחות בכל קריאה, בלי לשנות את ההיסטוריה השמורה.
+> - חישוב העלות ואחוז ה-cache.
+> - ההיסטוריה append-only ושורדת הפעלה מחדש.
+> - compaction מעל הסף.
+> - מופע חדש בסשן 2 מקבל את הזיכרון מהדיסק בהקשר.
+>
+> לכן בטבלאות למטה עמודת ה-API ריקה, וההשוואה בסעיף 3 מבוססת על מבנה הקוד ועל המדידה של ה-SDK, לא על מדידה של שתי הגרסאות. כדי להשלים: `python API/main.py --scenario scenario.json --out results/api.json` ואז `python make_report.py`.
+
 ## 1. API מול SDK
 
 | | API | SDK |
@@ -51,16 +65,16 @@ _עוד לא הורץ: `python API/main.py --scenario scenario.json --out result
 
 | חלק | API (שורות קוד) | SDK (שורות שמסומנות `# replaces:`) |
 |---|---|---|
-| loop | - | 3 |
-| tools | - | 5 |
-| history | - | 2 |
-| memory | - | 3 |
-| context | - | 2 |
-| compaction | - | 0 |
-| caching | - | 0 |
-| tokens | - | 9 |
-| חיווט (agent + main) | - | כלול בסה"כ |
-| **סה"כ** | **-** | **143** |
+| loop | 14 | 3 |
+| tools | 80 | 5 |
+| history | 28 | 2 |
+| memory | 7 | 3 |
+| context | 13 | 2 |
+| compaction | 22 | 0 |
+| caching | 14 | 0 |
+| tokens | 28 | 9 |
+| חיווט (agent + main) | 75 | כלול בסה"כ |
+| **סה"כ** | **286** | **143** |
 
 ב-API כל אחריות היא קובץ ב-`API/harness/`, וכל פעולה בזמן ריצה מודפסת עם שם הקובץ שביצע אותה. ב-SDK יש שורה אחת או שתיים לכל אחריות. `compaction` ו-`caching` לא מופיעים בעמודת ה-SDK כי הם אוטומטיים לגמרי ואין שום שורה שמחליפה אותם.
 

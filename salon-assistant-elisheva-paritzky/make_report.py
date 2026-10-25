@@ -49,18 +49,38 @@ def checks_table(api, sdk):
 
 def loc_table(api, sdk):
     parts = ["loop", "tools", "history", "memory", "context", "compaction", "caching", "tokens"]
-    la = api["lines_of_code"] if api else {}
-    ls = sdk["lines_of_code"] if sdk else {}
+    # Line counts come from the code itself, so they don't depend on a run having happened.
+    sys.path.insert(0, str(ROOT))
+    from shared.scenario import loc_api, loc_sdk
+    la, ls = loc_api(), loc_sdk()
     out = ["| חלק | API (שורות קוד) | SDK (שורות שמסומנות `# replaces:`) |", "|---|---|---|"]
-    out += [f"| {p} | {la.get(p, '-')} | {ls.get(p, 0) if sdk else '-'} |" for p in parts]
+    out += [f"| {p} | {la.get(p, '-')} | {ls.get(p, 0)} |" for p in parts]
     out.append(f"| חיווט (agent + main) | {la.get('agent+main', '-')} | כלול בסה\"כ |")
     out.append(f"| **סה\"כ** | **{la.get('total', '-')}** | **{ls.get('total', '-')}** |")
     return "\n".join(out)
 
 
+API_NOT_RUN = """> **הערה: גרסת ה-API לא הורצה מול המודל האמיתי.** הרצה כזו דורשת קרדיט בתשלום ב-Claude Console, ולא היה לי מפתח.
+> הגרסה מלאה ונבדקה offline עם client מדומה (`tests/test_api_harness.py`, 14 בדיקות). הבדיקות מאמתות:
+> - הלולאה ממשיכה כל עוד `stop_reason == "tool_use"` ונעצרת ב-`end_turn`.
+> - כמה `tool_result` חוזרים בהודעה אחת.
+> - שגיאת כלי או כלי לא מוכר חוזרים כ-`is_error` בלי לקרוס.
+> - הבקשה נשלחת עם המודל, ה-effort וה-`fallbacks` הנכונים.
+> - נקודות ה-cache נשלחות בכל קריאה, בלי לשנות את ההיסטוריה השמורה.
+> - חישוב העלות ואחוז ה-cache.
+> - ההיסטוריה append-only ושורדת הפעלה מחדש.
+> - compaction מעל הסף.
+> - מופע חדש בסשן 2 מקבל את הזיכרון מהדיסק בהקשר.
+>
+> לכן בטבלאות למטה עמודת ה-API ריקה, וההשוואה בסעיף 3 מבוססת על מבנה הקוד ועל המדידה של ה-SDK, לא על מדידה של שתי הגרסאות. כדי להשלים: `python API/main.py --scenario scenario.json --out results/api.json` ואז `python make_report.py`.
+
+"""
+
+
 def main():
     api, sdk = load("api"), load("sdk")
-    text = TEMPLATE.format(summary=summary_table(api, sdk), checks=checks_table(api, sdk),
+    text = TEMPLATE.format(api_note=API_NOT_RUN if api is None else "",
+                           summary=summary_table(api, sdk), checks=checks_table(api, sdk),
                            loc=loc_table(api, sdk), api_turns=turns_table(api), sdk_turns=turns_table(sdk))
     (ROOT / "REPORT.md").write_text(text, encoding="utf-8")
     print("wrote REPORT.md")
@@ -72,7 +92,7 @@ TEMPLATE = """# דוח: סוכן אחד, שני harnesses
 
 **השוואה הוגנת:** אותו מודל (`claude-opus-5-5`) ואותו effort (`medium`) מ-`shared/config.py`, אותם כלים מ-`shared/tools.py`, אותן הוראות מ-`shared/prompts.py`, גרסאות ספריות נעולות (`requirements.lock.txt`), וכל ריצה מתחילה מתיקיית `state/` ריקה.
 
-## 1. API מול SDK
+{api_note}## 1. API מול SDK
 
 {summary}
 

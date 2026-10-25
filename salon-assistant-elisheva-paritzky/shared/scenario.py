@@ -67,6 +67,10 @@ def _code_lines(path: Path) -> list[str]:
     lines, in_doc = [], False
     for raw in path.read_text(encoding="utf-8").splitlines():
         s = raw.strip()
+        if in_doc:
+            if s.endswith(('"""', "'''")):
+                in_doc = False
+            continue
         if s.startswith(('"""', "'''")):
             if not (len(s) > 3 and s.endswith(('"""', "'''"))):
                 in_doc = not in_doc

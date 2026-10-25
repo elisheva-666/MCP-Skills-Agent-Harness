@@ -65,7 +65,7 @@ _עוד לא הורץ: `python API/main.py --scenario scenario.json --out result
 
 | חלק | API (שורות קוד) | SDK (שורות שמסומנות `# replaces:`) |
 |---|---|---|
-| loop | 14 | 3 |
+| loop | 46 | 3 |
 | tools | 80 | 5 |
 | history | 28 | 2 |
 | memory | 7 | 3 |
@@ -74,7 +74,7 @@ _עוד לא הורץ: `python API/main.py --scenario scenario.json --out result
 | caching | 14 | 0 |
 | tokens | 28 | 9 |
 | חיווט (agent + main) | 75 | כלול בסה"כ |
-| **סה"כ** | **286** | **143** |
+| **סה"כ** | **318** | **143** |
 
 ב-API כל אחריות היא קובץ ב-`API/harness/`, וכל פעולה בזמן ריצה מודפסת עם שם הקובץ שביצע אותה. ב-SDK יש שורה אחת או שתיים לכל אחריות. `compaction` ו-`caching` לא מופיעים בעמודת ה-SDK כי הם אוטומטיים לגמרי ואין שום שורה שמחליפה אותם.
 
